@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     public function __construct()
@@ -24,6 +30,24 @@ class AuthController extends Controller
         }
 
         return $this->respondWithToken($token);
+    }
+
+    public function register(Request $request)
+    {
+        $user = User::create(
+            $request->only('name', 'email') + [
+                'password' => Hash::make($request->input('password'))
+            ]
+        );
+
+        // Generate JWT token for the user
+        $token = JWTAuth::fromUser($user);
+
+        // Return response with user data and token
+        return response([
+            'user' => new UserResource($user),
+            'token' => $token,
+        ]);
     }
 
     /**
