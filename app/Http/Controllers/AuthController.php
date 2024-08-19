@@ -21,17 +21,22 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function login()
-    {
-        $credentials = request(['email', 'password']);
+     public function login(Request $request)
+     {
+         // Validate the login credentials
+         $credentials = $request->only('email', 'password');
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+         // Attempt to authenticate the user and generate a token
+         if (!$token = auth()->attempt($credentials)) {
+             return response()->json(['error' => 'The provided credentials are not correct!'], 422);
+         }
 
-        return $this->respondWithToken($token);
-    }
-
+         // Return the response with the authenticated user's data and token
+         return response([
+             'user' => new UserResource(auth()->user()),
+             'token' => $token,
+         ]);
+     }
     public function register(Request $request)
     {
         $user = User::create(
