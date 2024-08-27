@@ -13,7 +13,10 @@ class Task extends Model
         'title',
         'description',
         'status'
-    ] ;
+    ];
+    protected $attributes = [
+        'status' => 'incomplete',
+    ];
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
     }

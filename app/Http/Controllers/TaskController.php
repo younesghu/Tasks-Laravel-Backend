@@ -14,11 +14,44 @@ class TaskController extends Controller
     // {
     //     $this->middleware('auth:api')->except(['store']);
     // }
+    public function create(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
 
+        // Validate the request data
+        $data = $request->validate([
+            'title' => 'required|unique:tasks,title',
+            'description' => 'required',
+        ]);
 
+        try {
+            // Attach the authenticated user to the task data
+            $data['user_id'] = $user->id;
+
+            // Create the task
+            $task = Task::create($data);
+
+            // Return a success response with the created task
+            return response()->json([
+                'message' => 'Task created successfully!',
+                'task' => new TaskResource($task),
+            ], 201); // 201: Resource created successfully
+
+        } catch (\Exception $e) {
+            // Return an error response if task creation fails
+            return response()->json([
+                'message' => 'Task failed to be created!',
+                'error' => $e->getMessage(),
+            ], 500); // 500: Internal server error
+        }
+    }
     /**
      * Display a listing of the resource.
-     */public function index(Request $request)
+     */
+    public function index(Request $request)
     {
         $user = auth()->user();
         if (!$user) {
@@ -32,12 +65,12 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function store(Request $request)
-    {
-        $result = Task::create($request->validated());
+    // public function store(Request $request)
+    // {
+    //     $result = Task::create($request->validated());
 
-        return new TaskResource($result);
-    }
+    //     return new TaskResource($result);
+    // }
 
     /**
      * Display the specified resource.
