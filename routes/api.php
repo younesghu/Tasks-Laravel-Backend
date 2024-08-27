@@ -19,8 +19,8 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
 
 Route::group(['middleware' => 'api','prefix' => 'tasks'], function ($router) {
     Route::get('/', [TaskController::class, 'index']);
-    Route::post('/', [TaskController::class, 'create']);
-    Route::get('/{taskId}', [TaskController::class, 'show']);
-    Route::put('/{taskId}', [TaskController::class, 'complete']);
-    Route::delete('/{taskId}', [TaskController::class, 'destroy']);
+    Route::post('/', [TaskController::class, 'store']);
+    Route::get('/{task}', [TaskController::class, 'show']);
+    Route::put('/{task}', [TaskController::class, 'update']);
+    Route::delete('/{task}', [TaskController::class, 'destroy']);
 });

@@ -2,132 +2,90 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:api')->except(['store']);
+    // }
+
+
     /**
      * Display a listing of the resource.
-     */
-    public function index()
+     */public function index(Request $request)
     {
-        // Fetch all existing tasks in Database and return them as JSON
-        $tasks = Task::all();
-        return response()->json($tasks);
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $tasks = $user->tasks()->orderBy('updated_at', 'desc')->get();
+        return TaskResource::collection($tasks);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
-    {
-        // Validate the request data
-        $data = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'title' => 'required|unique:tasks,title',
-            'description' => 'required',
-        ]);
-
-        try {
-            // Create the task
-            $task = Task::create($data);
-            // Return a success response with the created task
-            return response()->json([
-                'message' => 'Task created successfully!',
-                'task' => $task,
-            ], 201); // 201: Resource created successfully
-
-        } catch (\Exception $e) {
-            // Return an error response if task creation fails
-            return response()->json([
-                'message' => 'Task failed to be created!',
-                'error' => $e->getMessage()
-            ], 500); // 500: Internal server error
-        }
-    }
-    public function complete(string $taskId)
-    {
-        // Find the task by ID
-        $task = Task::find($taskId);
-
-        // Return an error if the task is not found
-        if (!$task) {
-            return response()->json(['message' => 'Task not found'], 404);
-        }
-
-        // Update the task status to completed
-        $task->update(['status' => 'complete']);
-
-        // Return a success response with the updated task
-        return response()->json([
-            'message' => 'Task marked as completed!',
-            'task' => $task
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $result = Task::create($request->validated());
+
+        return new TaskResource($result);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $taskId)
+    public function show(Task $task, Request $request)
     {
-        // Find the task by ID
-        $task = Task::find($taskId);
+        $user = $request->user();
 
-        // Return an error if the task is not found
-        if (!$task) {
-            return response()->json(['message' => 'Task not found'], 404);
+        // Check if the authenticated user owns the task
+        if ($user->id !== $task->user_id) {
+            return abort(403, 'Unauthorized action.');
         }
 
-        // Return the found task
-        return response()->json([
-            'task' => $task
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        return new TaskResource($task);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Task $task, Request $request)
     {
-        //
+        $user = $request->user();
+
+        // Ensure the authenticated user owns the task
+        if ($user->id !== $task->user_id) {
+            return response()->json(['message' => 'Unauthorized action.'], 403);
+        }
+
+        // Update the task status
+        $task->status = 'complete';
+        $task->save();
+
+        // Return the updated task as a resource
+        return new TaskResource($task);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $taskId)
+    public function destroy(Task $task, Request $request)
     {
-        // Find the task by ID
-        $task = Task::find($taskId);
-
-        // Return an error if the task is not found
-        if (!$task) {
-            return response()->json(['message' => 'Task not found'], 404);
+        $user = $request->user();
+        if( $user->id !== $task->user_id ) {
+            return abort(433, 'Unauthorized action.');
         }
 
-        // Delete the task
         $task->delete();
 
-        // Return a success response indicating deletion
-        return response()->json([
-            'message' => 'Task has been deleted successfully!',
-        ]);
+        return response()->json(['message' => 'Task has been deleted successfully!'], 200);
     }
 }
