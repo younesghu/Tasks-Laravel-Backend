@@ -99,8 +99,11 @@ class TaskController extends Controller
             return response()->json(['message' => 'Unauthorized action.'], 403);
         }
 
+        // Toggle the task status
+        $newStatus = $task->status === 'complete' ? 'incomplete' : 'complete';
+
         // Update the task status
-        $task->status = 'complete';
+        $task->update(['status' => $newStatus]);
         $task->save();
 
         // Return the updated task as a resource
