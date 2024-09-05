@@ -21,22 +21,22 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-     public function login(Request $request)
-     {
-         // Validate the login credentials
-         $credentials = $request->only('email', 'password');
+    public function login(Request $request)
+    {
+        // Validate the login credentials
+        $credentials = $request->only('email', 'password');
 
-         // Attempt to authenticate the user and generate a token
-         if (!$token = auth()->attempt($credentials)) {
-             return response()->json(['error' => 'The provided credentials are not correct!'], 422);
-         }
+        // Attempt to authenticate the user and generate a token
+        if (!$token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'The provided credentials are not correct!'], 422);
+        }
 
-         // Return the response with the authenticated user's data and token
-         return response([
-             'user' => new UserResource(auth()->user()),
-             'token' => $token,
-         ]);
-     }
+        // Return the response with the authenticated user's data and token
+        return response()->json([
+            'user' => new UserResource(auth()->user()),
+            'access_token' => $this->respondWithToken($token)->original['access_token'],
+        ]);
+    }
     public function register(Request $request)
     {
         $user = User::create(
@@ -45,13 +45,13 @@ class AuthController extends Controller
             ]
         );
 
-        // Generate JWT token for the user
-        $token = JWTAuth::fromUser($user);
+        // Log the user in and generate a token
+        $token = auth()->attempt($request->only('email', 'password'));
 
         // Return response with user data and token
-        return response([
+        return response()->json([
             'user' => new UserResource($user),
-            'token' => $token,
+            'access_token' => $this->respondWithToken($token)->original['access_token'],
         ]);
     }
 
