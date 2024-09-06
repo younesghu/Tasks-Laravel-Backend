@@ -69,3 +69,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ![Task App Use Case](https://github.com/user-attachments/assets/2c36cb55-4d34-46d4-bbb4-ad9ecda8a5a0)
 
+## Use Class Diagram
+
+![Task App Use Class Diagram](https://github.com/user-attachments/assets/845ebea0-7799-4bf1-86fa-412d4582cc7a)
+
