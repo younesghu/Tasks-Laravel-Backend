@@ -64,3 +64,8 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Use Case Diagram
+
+![Task App Use Case](https://github.com/user-attachments/assets/2c36cb55-4d34-46d4-bbb4-ad9ecda8a5a0)
+
