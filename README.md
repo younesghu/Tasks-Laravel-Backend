@@ -32,20 +32,20 @@
 <ul>
   <li><strong>Clone the repository:</strong></li>
 
-  <pre><code>bash
+  <pre><code>
 git clone https://github.com/younesghu/Tasks-Laravel-Backend.git
 cd Tasks-Laravel-Backend
   </code></pre>
 
   <li><strong>Install dependencies:</strong></li>
 
-  <pre><code>bash
+  <pre><code>
 composer install
   </code></pre>
 
   <li><strong>Create a <code>.env</code> file:</strong></li>
 
-  <pre><code>bash
+  <pre><code>
 cp .env.example .env
   </code></pre>
 
@@ -53,13 +53,13 @@ cp .env.example .env
 
   <li><strong>Generate an application key:</strong></li>
 
-  <pre><code>bash
+  <pre><code>
 php artisan key:generate
   </code></pre>
 
   <li><strong>Run the database migrations:</strong></li>
 
-  <pre><code>bash
+  <pre><code>
 php artisan migrate
       or
 php artisan migrate:fresh --seed
@@ -75,7 +75,7 @@ php artisan migrate:fresh --seed
 
   <li><strong>Start the development server:</strong></li>
 
-  <pre><code>bash
+  <pre><code>
 php artisan serve
   </code></pre>
 </ul>
