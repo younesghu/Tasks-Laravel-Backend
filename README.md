@@ -57,6 +57,12 @@ cp .env.example .env
 php artisan key:generate
   </code></pre>
 
+  <li><strong>Generate JWT secret:</strong></li>
+
+  <pre><code>
+php artisan jwt:secret
+  </code></pre>
+
   <li><strong>Run the database migrations:</strong></li>
 
   <pre><code>
